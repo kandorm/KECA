@@ -71,11 +71,11 @@ class _EntAttMean(Layer):
                                     shape=(self.entity_dim, self.att_dim),
                                     initializer='uniform',
                                     trainable=True)
-        self.Wh = self.add_weight(name='',
+        self.Wh = self.add_weight(name='Wh',
                                     shape=(self.hidden_dim, self.att_dim),
                                     initializer='uniform',
                                     trainable=True)
-        self.Ws = self.add_weight(name='',
+        self.Ws = self.add_weight(name='Ws',
                                     shape=(self.att_dim, 1),
                                     initializer='uniform',
                                     trainable=True)
@@ -95,8 +95,8 @@ class _EntAttMean(Layer):
 
         reshape_ent = tf.reshape(ent, [-1, self.entity_dim])  # (batch * enc(dec) * n_entity, entity_dim)
 
-        M = tf.tanh(tf.add(tf.matmul(reshape_cxt, self.), tf.matmul(reshape_ent, self.We)))  # (batch * enc(dec) * n_entity, attention_dim)
-        M = tf.matmul(M, self.)  # (batch * enc(dec) * n_entity, 1)
+        M = tf.tanh(tf.add(tf.matmul(reshape_cxt, self.Wh), tf.matmul(reshape_ent, self.We)))  # (batch * enc(dec) * n_entity, attention_dim)
+        M = tf.matmul(M, self.Ws)  # (batch * enc(dec) * n_entity, 1)
 
         S = tf.reshape(M, [-1, n_entity])  # (batch * enc(dec), n_entity)
         S = tf.nn.softmax(S)  # (batch * enc(dec), n_entity)
